@@ -2,12 +2,29 @@
 
 namespace Core;
 
+/**
+ * @method post($route, $params)
+ * @method get($route, $params)
+ * @method put($route, $params)
+ * @method path($route, $params)
+ */
 class Router
 {
+    const REQUEST_METHODS = [
+        'post',
+        'get',
+        'put',
+        'path',
+        'delete'
+    ];
 
     protected $routes = [];
 
     protected $params = [];
+
+    public function checkRequestMethod($controller) {
+     // $_SERVER['REQUEST_METHOD']
+    }
 
     public function add($route, $params = [])
     {
@@ -29,6 +46,10 @@ class Router
     public function getRoutes()
     {
         return $this->routes;
+    }
+
+    public function matchRequest() {
+
     }
 
     public function match($url)
@@ -61,6 +82,7 @@ class Router
 
         if ($this->match($url)) {
             $controller = $this->params['controller'];
+
             $controller = $this->convertToStudlyCaps($controller);
             $controller = $this->getNamespace() . $controller;
 
@@ -70,9 +92,15 @@ class Router
                 $action = $this->params['action'];
                 $action = $this->convertToCamelCase($action);
 
-                if (preg_match('/action$/i', $action) == 0) {
-                    $controller_object->$action();
 
+
+                if (preg_match('/action$/i', $action) == 0) {
+
+                    if (isset($this->params['method']) && strtoupper($this->params['method']) !== $_SERVER['REQUEST_METHOD']) {
+                        throw new \Exception("Method $action is not supported method ".$_SERVER['REQUEST_METHOD']);
+                    }
+
+                    $controller_object->$action();
                 } else {
                     throw new \Exception("Method $action in controller $controller cannot be called directly - remove the Action suffix to call this method");
                 }
@@ -117,5 +145,16 @@ class Router
         }
 
         return $namespace;
+    }
+
+    public function __call($name, $arguments)
+    {
+
+        if (!in_array($name, self::REQUEST_METHODS)) {
+            throw new \Exception("Method $name not found");
+        }
+
+        $arguments[1]['method'] = $name;
+        $this->add($arguments[0], $arguments[1]);
     }
 }
