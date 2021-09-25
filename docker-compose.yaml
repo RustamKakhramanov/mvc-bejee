@@ -8,7 +8,7 @@ services:
       - 8080:80
     volumes:
     - ./.docker-compose/nginx/default.conf:/etc/nginx/conf.d/default.conf
-    - ./docker-compose/nignx/logs:/var/log/nginx
+    - ./.docker-compose/nignx/logs:/var/log/nginx
     - .:/var/www/html
   php:
     container_name: bejee_php
