@@ -1,11 +1,15 @@
 {
     "require": {
-        "twig/twig": "~3.0"
+        "php": "^7.4",
+        "twig/twig": "~3.0",
+        "rakit/validation": "^1.4",
+        "izniburak/router": "^2.3",
+        "ext-pdo": "*"
     },
     "autoload": {
         "psr-4": {
-            "Core\\": "Core/",
-            "App\\": "App/"
+            "Core\\": "core/",
+            "App\\": "app/"
         }
     }
 }
