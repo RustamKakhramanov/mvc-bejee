@@ -12,17 +12,24 @@ abstract class Model
 
     protected string $query = '';
     protected string $table = '';
+    protected $attributes = [];
 
     public function __construct() {
         $this->DB = Database::getDB();
     }
 
+    protected function getInitialQuery($custom_attr = []): string
+    {
+        $attributes = implode(',', $custom_attr ? : $this->attributes);
+        $table = $this->table;
+
+        return "SELECT $attributes, name FROM $table ";
+    }
+
     public function getAll($page = null, $limit = null, $orderBy = 'id') {
         $returned = [];
 
-        $attributes = implode(',', $this->attributes);
-        $table = $this->table;
-        $this->query  =  "SELECT $attributes, name FROM $table";
+        $this->query  =  $this->getInitialQuery();
         $this->query .= " ORDER BY $orderBy DESC";
 
         if ( $page  ) {
@@ -43,7 +50,7 @@ abstract class Model
         $stmt = $this->DB->query($this->query);
         $stmt->execute();
 
-        $returned['data'] = json_decode(json_encode($stmt->fetchAll(PDO::FETCH_ASSOC)));
+        $returned['data'] =  $this->toCollection($stmt->fetchAll())->get();
 
         return $returned;
     }
@@ -63,6 +70,21 @@ abstract class Model
         $statement->fetchAll();
 
         return $this->DB->lastInsertId();
+    }
+
+    public function createAndGet($values) {
+        $id = $this->write($values);
+        $query = $this->getInitialQuery();
+        $query .= "WHERE id=? LIMIT 1";
+
+        $stmt = $this->DB->prepare($query);
+        $stmt->execute([$id]);
+
+        return $this->toCollection($stmt->fetchAll())->first();
+    }
+
+    protected function toCollection($data) {
+        return (new Collection($this->attributes, $data));
     }
 
     public function getWithPaginateAndSorting($page, $limit, $sorting) {
