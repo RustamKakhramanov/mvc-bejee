@@ -5,12 +5,14 @@ namespace Core;
 use Rakit\Validation\Validator;
 use Symfony\Component\HttpFoundation\Request;
 
+/** @property Validator $validator */
 abstract class Controller
 {
     protected Validator $validator;
     protected Request $request;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->validator = new Validator();
 
         $this->before();

@@ -22,12 +22,13 @@ class Collection
 
     public function setDataProperties()
     {
-       foreach ($this->data as $item) {
-            $this->preparedData[] = (object) array_intersect_key($item, array_flip($this->attributes));
-       }
+        foreach ($this->data as $item) {
+            $this->preparedData[] = (object)array_intersect_key($item, array_flip($this->attributes));
+        }
     }
 
-    public function get() {
+    public function get()
+    {
         return $this->preparedData;
     }
 

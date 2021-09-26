@@ -12,33 +12,35 @@ abstract class Model
 
     protected string $query = '';
     protected string $table = '';
-    protected $attributes = [];
+    protected array $attributes = [];
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->DB = Database::getDB();
     }
 
     protected function getInitialQuery($custom_attr = []): string
     {
-        $attributes = implode(',', $custom_attr ? : $this->attributes);
+        $attributes = implode(',', $custom_attr ?: $this->attributes);
         $table = $this->table;
 
         return "SELECT $attributes, name FROM $table ";
     }
 
-    public function getAll($page = null, $limit = null, $orderBy = 'id') {
+    public function getAll($page = null, $limit = null, $orderBy = 'id')
+    {
         $returned = [];
 
-        $this->query  =  $this->getInitialQuery();
+        $this->query = $this->getInitialQuery();
         $this->query .= " ORDER BY $orderBy DESC";
 
-        if ( $page  ) {
+        if ($page) {
             $count_sl = $this->DB->query("SELECT count(*) FROM $this->table");
             $count_sl->execute();
-            $limit = $limit ? : self::PAGES_LIMIT;
+            $limit = $limit ?: self::PAGES_LIMIT;
             $offset = $page - 1;
             $this->query .= " LIMIT " . $limit . " OFFSET " . $offset;
-            $pages = (int) ceil($count_sl->fetch()[0] / $limit);
+            $pages = (int)ceil($count_sl->fetch()[0] / $limit);
 
             if ($pages < $page) {
                 throw new \Exception('The requested page is greater than the number of pages');
@@ -50,13 +52,14 @@ abstract class Model
         $stmt = $this->DB->query($this->query);
         $stmt->execute();
 
-        $returned['data'] =  $this->toCollection($stmt->fetchAll())->get();
+        $returned['data'] = $this->toCollection($stmt->fetchAll())->get();
 
         return $returned;
     }
 
 
-    public function write($values = []) {
+    public function write($values = [])
+    {
         $keys = implode(',', array_keys($values));
         $attr_count = '?';
         $attr_count .= str_repeat(',?', count($values) - 1);
@@ -72,7 +75,8 @@ abstract class Model
         return $this->DB->lastInsertId();
     }
 
-    public function createAndGet($values) {
+    public function createAndGet($values)
+    {
         $id = $this->write($values);
         $query = $this->getInitialQuery();
         $query .= "WHERE id=? LIMIT 1";
@@ -83,16 +87,13 @@ abstract class Model
         return $this->toCollection($stmt->fetchAll())->first();
     }
 
-    protected function toCollection($data) {
+    protected function toCollection($data): Collection
+    {
         return (new Collection($this->attributes, $data));
     }
 
-    public function getWithPaginateAndSorting($page, $limit, $sorting) {
+    public function getWithPaginateAndSorting($page, $limit, $sorting): array
+    {
         return $this->getAll($page, $limit, $sorting);
     }
-
-    public function get() {
-        return json_decode(json_encode($this->DB->query($this->query)->fetchAll(PDO::FETCH_ASSOC)));
-    }
-
 }

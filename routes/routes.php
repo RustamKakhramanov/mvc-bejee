@@ -18,7 +18,6 @@ $router = new \Buki\Router\Router([
 ]);
 
 $router->get('/', 'TasksController@index');
-
-
+$router->post('/', 'TasksController@store');
 
 $router->run();

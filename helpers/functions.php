@@ -1,5 +1,7 @@
 <?php
 
+use Symfony\Component\HttpFoundation\Response as BaseResponse;
+
 if (!function_exists('config')) {
     function config($name) {
         $file = dirname(__DIR__)."/configs/{$name}.php";
@@ -28,6 +30,15 @@ if (!function_exists('env')) {
         });
 
         return $env_result ? : $default;
+    }
+}
+
+if (!function_exists('response_json')) {
+    function response_json($data, $code = 200): BaseResponse
+    {
+        $data = json_encode(['data' => $data]);
+
+        return new BaseResponse($data, 400 );
     }
 }
 

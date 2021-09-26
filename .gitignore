@@ -1,3 +1,4 @@
 vendor
-
+.docker-compose/postgres/data
+.idea
 composer.lock
