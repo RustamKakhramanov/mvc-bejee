@@ -30,3 +30,14 @@ if (!function_exists('env')) {
         return $env_result ? : $default;
     }
 }
+
+if (!function_exists('get_content')) {
+    function get_content($view, $viewPath = 'app/views') {
+        $file = dirname(__DIR__).'/'.$viewPath.'/'.$view;
+        if (file_exists($file)) {
+            ob_start();
+            include $file;
+            return ob_get_clean();
+        }
+    }
+}
