@@ -1,6 +1,6 @@
 FROM php:7.4-fpm-alpine
 
-# Установка расширения GD
+# Установка расширений GD
 RUN apk add --no-cache \
       freetype \
       libjpeg-turbo \
@@ -20,10 +20,12 @@ RUN apk add --no-cache \
     && php -r "readfile('https://getcomposer.org/installer');" | php -- --install-dir=/usr/bin/ --filename=composer \
     && rm -rf /tmp/*
 
-# Установка работы с PostgreSQL
+# Установка работы с MySQL
 RUN apk add --no-cache \
-      postgresql-dev \
-    && docker-php-ext-install pdo pdo_pgsql
+      mysql-client \
+      mysql-dev \
+    && docker-php-ext-install pdo pdo_mysql \
+    && echo "extension=pdo_mysql.so" > /usr/local/etc/php/conf.d/docker-php-ext-pdo_mysql.ini
 
 WORKDIR /var/www/html
 
