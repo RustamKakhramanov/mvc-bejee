@@ -4,20 +4,12 @@
 use Buki\Router\Router;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Controllers\CitiesController;
 
-$router = new \Buki\Router\Router([
-    'base_folder' => realpath('../'),
-    'paths' => [
-        'controllers' => 'App/Controllers',
-        'middlewares' => 'App/Middlewares',
-    ],
-    'namespaces' => [
-        'controllers' => 'App\Controllers',
-        'middlewares' => 'App\Middlewares',
-    ]
-]);
+$router = new Router();
 
-$router->get('/', 'TasksController@index');
-$router->post('/', 'TasksController@store');
+$router->get('/', function(Request $request) {
+    return (new CitiesController)->index($request);
+});
 
 $router->run();

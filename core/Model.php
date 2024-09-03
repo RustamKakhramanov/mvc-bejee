@@ -8,8 +8,6 @@ abstract class Model
 {
     protected PDO $DB;
 
-    const PAGES_LIMIT = 3;
-
     protected string $query = '';
     protected string $table = '';
     protected array $attributes = [];
@@ -37,7 +35,7 @@ abstract class Model
         if ($page) {
             $count_sl = $this->DB->query("SELECT count(*) FROM $this->table");
             $count_sl->execute();
-            $limit = $limit ?: self::PAGES_LIMIT;
+            $limit = $limit;
             $offset = $page - 1;
             $this->query .= " LIMIT " . $limit . " OFFSET " . $offset;
             $pages = (int)ceil($count_sl->fetch()[0] / $limit);
@@ -95,5 +93,10 @@ abstract class Model
     public function getWithPaginateAndSorting($page, $limit, $sorting): array
     {
         return $this->getAll($page, $limit, $sorting);
+    }
+
+    public function getTable()
+    {
+        return $this->table;
     }
 }

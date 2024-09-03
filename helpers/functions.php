@@ -3,17 +3,19 @@
 use Symfony\Component\HttpFoundation\Response as BaseResponse;
 
 if (!function_exists('config')) {
-    function config($name) {
-        $file = dirname(__DIR__)."/configs/{$name}.php";
+    function config($name)
+    {
+        $file = dirname(__DIR__) . "/configs/{$name}.php";
 
-        return file_exists($file) ? include_once($file): [];
+        return file_exists($file) ? include_once($file) : [];
     }
 }
 
 if (!function_exists('env')) {
-    function env($name, $default = null) {
-        $env_file = dirname(__DIR__).'/.env';
-        $env = file_exists($env_file) ? file_get_contents(dirname(__DIR__).'/.env') : false;
+    function env($name, $default = null)
+    {
+        $env_file = dirname(__DIR__) . '/.env';
+        $env = file_exists($env_file) ? file_get_contents(dirname(__DIR__) . '/.env') : false;
 
         if (!$env) {
             return $default;
@@ -29,7 +31,7 @@ if (!function_exists('env')) {
             }
         });
 
-        return $env_result ? : $default;
+        return $env_result ?: $default;
     }
 }
 
@@ -38,17 +40,29 @@ if (!function_exists('response_json')) {
     {
         $data = json_encode(['data' => $data]);
 
-        return new BaseResponse($data, 400 );
+        return new BaseResponse($data, 400);
     }
 }
 
 if (!function_exists('get_content')) {
-    function get_content($view, $viewPath = 'app/views') {
-        $file = dirname(__DIR__).'/'.$viewPath.'/'.$view;
+    function get_content($view, $viewPath = 'app/views')
+    {
+        $file = dirname(__DIR__) . '/' . $viewPath . '/' . $view;
         if (file_exists($file)) {
             ob_start();
             include $file;
             return ob_get_clean();
         }
+    }
+}
+
+if (!function_exists('dd')) {
+    function dd(...$dumps)
+    {
+        foreach ($dumps as $value) {
+            var_dump($value);
+            echo (PHP_EOL . '/////');
+        }
+        die;
     }
 }

@@ -2,7 +2,7 @@
     "require": {
         "php": "^7.4",
         "rakit/validation": "^1.4",
-        "izniburak/router": "^2.3",
+        "izniburak/router": "^2.5",
         "ext-pdo": "*"
     },
     "autoload": {
