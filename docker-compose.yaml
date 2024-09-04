@@ -17,17 +17,20 @@ services:
       - ./.docker-compose/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
     restart: always
     tty: true
+    depends_on:
+      - mysql
 
-  postgres:
-    container_name: bejee_postgres
-    image: postgres:12.4
+  mysql:
+    container_name: bejee_mysql
+    image: mysql:8.0
     volumes:
-      - "./.docker-compose/postgres/data:/var/lib/postgresql/data"
-      - ./postgres/dump.sql:/docker-entrypoint-initdb.d/dump.sql
+      - ./.docker-compose/mysql/dump.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./.docker-compose/mysql/data:/var/lib/mysql
     environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     ports:
-      - ${FORWARD_DB_PORT:-5430}:5432
+      - ${FORWARD_DB_PORT:-3306}:3306
     restart: always
