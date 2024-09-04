@@ -141,4 +141,9 @@ class CountryRepository extends Repository
 
         return $this->model->getByRaw($query);
     }
+
+    public function getDescription(): string
+    {
+        return '';
+    }
 }

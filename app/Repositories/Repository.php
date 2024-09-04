@@ -9,7 +9,9 @@ abstract class Repository
 {
     public function __construct()
     {
-        $this->model = $this->getModelClass();
+        $class = $this->getModelClass();
+
+        $this->model = new $class;
     }
 
     abstract protected function getModelClass(): string;

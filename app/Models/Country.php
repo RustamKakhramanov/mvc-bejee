@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Model;
+use Core\Model;
 
 class Country extends Model
 {
