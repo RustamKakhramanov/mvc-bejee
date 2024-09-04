@@ -45,11 +45,12 @@ if (!function_exists('response_json')) {
 }
 
 if (!function_exists('get_content')) {
-    function get_content($view, $viewPath = 'app/views')
+    function get_content($view, $args = [], $viewPath = 'app/Views')
     {
         $file = dirname(__DIR__) . '/' . $viewPath . '/' . $view;
         if (file_exists($file)) {
             ob_start();
+            extract($args, EXTR_SKIP);
             include $file;
             return ob_get_clean();
         }

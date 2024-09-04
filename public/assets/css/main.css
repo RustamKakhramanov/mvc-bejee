@@ -1,0 +1,15 @@
+.country__name {
+  font-weight: bold;
+}
+.tab-element {
+  margin-left: 20px;
+}
+.item-info__desc {
+  display: none;
+}
+.item-info__title {
+  cursor: pointer;
+}
+.item-info:hover > .item-info__desc {
+  display: block;
+}

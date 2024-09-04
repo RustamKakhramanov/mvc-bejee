@@ -5,11 +5,8 @@ namespace App\Controllers;
 use Core\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use App\Services\LanguageService;
-use App\Models\City;
 use Core\View;
-use App\Models\Country;
 use App\Repositories\CountryRepository;
-use App\Services\Adapters\CountryDataAdapter;
 
 class CountryController extends Controller
 {
