@@ -10,12 +10,12 @@ use App\Controllers\GetDescriptionController;
 
 $router = new Router();
 
-$router->get('/', function(Request $request) {
+$router->get('/', function (Request $request) {
     return (new CountryController)->index($request);
 });
 
-$router->get('/', function(Request $request) {
-    return (new GetDescriptionController)->getDescription($request);
-});
+// $router->get('/', function(Request $request) {
+//     return (new GetDescriptionController)->getDescription($request);
+// });
 
 $router->run();

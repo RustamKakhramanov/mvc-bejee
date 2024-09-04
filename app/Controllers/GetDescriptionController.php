@@ -14,7 +14,7 @@ class GetDescriptionController extends Controller
         $type = $request->get('type');
         $id = $request->get('id');
 
-        $repository = (new RepositoryResolver)->resolve($request->get($type));
+        $repository = (new RepositoryResolver)->resolve($type);
         $description = $repository->getDescription($id);
 
         return response_json(compact('description'));
