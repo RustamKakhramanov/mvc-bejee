@@ -2,6 +2,8 @@
 
 namespace Core;
 
+use Core\Collection;
+use Core\Database;
 use PDO;
 
 abstract class Model
@@ -17,86 +19,76 @@ abstract class Model
         $this->DB = Database::getDB();
     }
 
-    protected function getInitialQuery($custom_attr = []): string
+    protected function getInitialQuery(array $customAttr = []): string
     {
-        $attributes = implode(',', $custom_attr ?: $this->attributes);
-        $table = $this->table;
-
-        return "SELECT $attributes, name FROM $table ";
+        $attributes = implode(',', $customAttr ?: $this->attributes);
+        return "SELECT $attributes FROM $this->table ";
     }
 
-    public function getAll($page = null, $limit = null, $orderBy = 'id')
+    public function getAll(int $page = null, int $limit = null, string $orderBy = 'id'): array
     {
-        $returned = [];
-
         $this->query = $this->getInitialQuery();
         $this->query .= " ORDER BY $orderBy DESC";
+        $returned = [];
 
         if ($page) {
-            $count_sl = $this->DB->query("SELECT count(*) FROM $this->table");
-            $count_sl->execute();
-            $limit = $limit;
-            $offset = $page - 1;
-            $this->query .= " LIMIT " . $limit . " OFFSET " . $offset;
-            $pages = (int)ceil($count_sl->fetch()[0] / $limit);
+            $countQuery = $this->DB->query("SELECT count(*) FROM $this->table");
+            $countQuery->execute();
+            $totalCount = $countQuery->fetchColumn();
+            $offset = ($page - 1) * $limit;
+            $pages = ceil($totalCount / $limit);
 
-            if ($pages < $page) {
+            if ($page > $pages) {
                 throw new \Exception('The requested page is greater than the number of pages');
             }
 
+            $this->query .= " LIMIT $limit OFFSET $offset";
             $returned['pages'] = $pages;
         }
 
         $stmt = $this->DB->query($this->query);
         $stmt->execute();
-
         $returned['data'] = $this->toCollection($stmt->fetchAll())->get();
 
         return $returned;
     }
 
-
-    public function write($values = [])
+    public function create(array $values): int
     {
         $keys = implode(',', array_keys($values));
-        $attr_count = '?';
-        $attr_count .= str_repeat(',?', count($values) - 1);
+        $placeholders = implode(',', array_fill(0, count($values), '?'));
 
-        $this->query = "INSERT INTO $this->table ($keys) VALUES ($attr_count)";
-
-        $statement = $this->DB->prepare($this->query);
-
+        $query = "INSERT INTO $this->table ($keys) VALUES ($placeholders)";
+        $statement = $this->DB->prepare($query);
         $statement->execute(array_values($values));
 
-        $statement->fetchAll();
-
-        return $this->DB->lastInsertId();
+        return (int)$this->DB->lastInsertId();
     }
 
-    public function createAndGet($values)
+    public function find(int $id): ?array
     {
-        $id = $this->write($values);
-        $query = $this->getInitialQuery();
-        $query .= "WHERE id=? LIMIT 1";
-
+        $query = $this->getInitialQuery() . "WHERE id = ? LIMIT 1";
         $stmt = $this->DB->prepare($query);
         $stmt->execute([$id]);
 
-        return $this->toCollection($stmt->fetchAll())->first();
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    protected function toCollection($data): Collection
+    protected function toCollection(array $data): Collection
     {
-        return (new Collection($this->attributes, $data));
+        return new Collection($this->attributes, $data);
     }
 
-    public function getWithPaginateAndSorting($page, $limit, $sorting): array
-    {
-        return $this->getAll($page, $limit, $sorting);
-    }
-
-    public function getTable()
+    public function getTable(): string
     {
         return $this->table;
+    }
+
+    public function getByRaw(string $query): array
+    {
+        $stmt = $this->DB->query($query);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
     }
 }

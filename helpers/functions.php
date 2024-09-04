@@ -60,7 +60,7 @@ if (!function_exists('dd')) {
     function dd(...$dumps)
     {
         foreach ($dumps as $value) {
-            var_dump($value);
+            print_r($value);
             echo (PHP_EOL . '/////');
         }
         die;
