@@ -11,17 +11,17 @@ class LanguageService
         $this->config = config('lang');
     }
 
-    public function getDefaultLanguage()
+    public function getDefaultLanguage(): array
     {
         return $this->config['default_language'];
     }
 
-    public function getLanguagesList()
+    public function getLanguagesList(): array
     {
         return $this->config['languages'];
     }
 
-    public function getLocaleMapping()
+    public function getLocaleMapping(): array
     {
         return $this->config['locale_mapping'];
     }
